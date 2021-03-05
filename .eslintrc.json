@@ -1,0 +1,21 @@
+{
+    "extends": [
+      "eslint:recommended",
+      "plugin:node/recommended",
+      "prettier"
+    ],
+    "plugins": [
+      "prettier",
+      "node",
+      "jest"
+    ],
+    "env": {
+      "commonjs": true,
+      "jest/globals": true
+    },
+    "rules": {
+      "prettier/prettier": [
+        "error"
+      ]
+    }
+  }
