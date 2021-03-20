@@ -5,7 +5,7 @@
  */
 
 var app = require('../app');
-var debug = require('debug')('card-trading:server');
+var debug = require('debug')('adopt-me:server');
 var http = require('http');
 
 /**
