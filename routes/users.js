@@ -39,4 +39,45 @@ router.post('/', async (req, res) => {
   }
 });
 
+/**
+*  @swagger
+*  /u/{id}:
+*    put:
+*      summary: update an existing user's data
+*      parameters:
+*        - in: path
+*          required: true
+*          name: user's id
+*          description: an existing user's id
+*          schema:
+*            type: integer
+*            format: int32
+*      responses:
+*        200:
+*          description: user edited
+*          contents:
+*            application/JSON:
+*              schema:
+*                type: object
+*                items:
+*                  name: string
+*                  lastName: string
+*                  username: string
+*                  password: string
+*        400:
+*          description: could not edit user
+*          contents:
+*            application/JSON:
+*              schema:
+*                type: object
+*                items:
+*                  error: string
+*/
+router.put('/:id',async (req,res)=>{
+  const {name, lastName, username, password}=req.body;
+  const u=await users.editUser(req.params.id,{name, lastName, username, password});
+  if(u.error) res.status(400).send({error:u.error});
+  else res.status(200).send({name, lastName, username, password});
+});
+
 module.exports = router;
