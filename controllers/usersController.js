@@ -19,6 +19,11 @@ class usersController {
     return id.rows[0].max + 15;
   }
 
+  async getList(){
+    const users=await pool.query("select * from users");
+    return users.rows;
+  }
+
   async getUserById(id) {
     const user = await pool.query('select * from users where userid = $1', [id]);
     return user.rows[0];
@@ -38,8 +43,13 @@ class usersController {
     return user.rows[0];
   }
   async editUser(id, data){
-    if(!data.name||!data.lastName||!data.username||!data.password)return {error:'not enough arguments'};
-    const q=await pool.query('update users set name=$2, lastName=$3, username=$4, password=$5 where userid=$1',[id,data.name,data.lastName,data.username,data.password]);
+    let a=0;
+    let params=[id];
+    let qq='';
+    Object.keys(data).forEach(k=>{if(data[k]&&data[k].length>3){a++;params.push(data[k]);qq+=k+'=$'+(a+1)+', ';}});
+    if(a==0)return {error:"no data recieved"};
+    qq=qq.substring(0,qq.length-2);
+    const q=await pool.query(`update users set ${qq} where userid=$1`,params);
     if(q.err)return {error:q.err};
     return q;
   }

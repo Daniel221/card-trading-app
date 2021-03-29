@@ -74,10 +74,46 @@ router.post('/', async (req, res) => {
 *                  error: string
 */
 router.put('/:id',async (req,res)=>{
-  const {name, lastName, username, password}=req.body;
-  const u=await users.editUser(req.params.id,{name, lastName, username, password});
+  const {name, lastName, username, password, img}=req.body;
+  const u=await users.editUser(req.params.id,{name, lastName, username, password, img});
   if(u.error) res.status(400).send({error:u.error});
   else res.status(200).send({name, lastName, username, password});
+});
+
+/**
+ * @swagger
+ * /u:
+ *  get:
+ *    summary: get all users from the database
+ *    responses:
+ *        200:
+ *          description: an array of users as JSON objects
+ *          contents:
+ *            application/JSON:
+ *              schema:
+ *                type: array
+ *                items:
+ *                  type: object
+ *                  items:
+ *                    name: string
+ *                    lastName: string
+ *                    username: string
+ *                    password: string
+ *                    img: string
+ *        400:
+ *          description: could not get user list
+ *          contents:
+ *            application/JSON:
+ *              schema:
+ *                type: object
+ *                items:
+ *                  error: string
+ */
+router.get('/',async(req,res)=>{
+  const data=await users.getList();
+  console.log(data)
+  if(data.error) res.status(400).send({error:data.error});
+  else res.status(200).send(data);
 });
 
 module.exports = router;
