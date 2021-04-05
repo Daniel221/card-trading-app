@@ -1,11 +1,10 @@
 const { Pool } = require('pg');
 
 const pool = new Pool({
-  host: 'localhost',
-  user: `postgres`,
-  password: `RjXENUh3Pq7ZR7SJ`,
-  database: 'postgres',
-  port: 5432,
+  connectionString: process.env.DATABASE_URL,
+  ssl: {
+    rejectUnauthorized: false,
+  },
 });
 
 pool.connect((err) => {
@@ -19,8 +18,8 @@ class usersController {
     return id.rows[0].max + 15;
   }
 
-  async getList(){
-    const users=await pool.query("select * from users");
+  async getAllUsers() {
+    const users = await pool.query('select * from users');
     return users.rows;
   }
 
@@ -42,15 +41,21 @@ class usersController {
     );
     return user.rows[0];
   }
-  async editUser(id, data){
-    let a=0;
-    let params=[id];
-    let qq='';
-    Object.keys(data).forEach(k=>{if(data[k]&&data[k].length>3){a++;params.push(data[k]);qq+=k+'=$'+(a+1)+', ';}});
-    if(a==0)return {error:"no data recieved"};
-    qq=qq.substring(0,qq.length-2);
-    const q=await pool.query(`update users set ${qq} where userid=$1`,params);
-    if(q.err)return {error:q.err};
+  async editUser(id, data) {
+    let a = 0;
+    let params = [id];
+    let qq = '';
+    Object.keys(data).forEach((k) => {
+      if (data[k] && data[k].length > 3) {
+        a++;
+        params.push(data[k]);
+        qq += k + '=$' + (a + 1) + ', ';
+      }
+    });
+    if (a == 0) return { error: 'no data recieved' };
+    qq = qq.substring(0, qq.length - 2);
+    const q = await pool.query(`update users set ${qq} where userid=$1`, params);
+    if (q.err) return { error: q.err };
     return q;
   }
 }
