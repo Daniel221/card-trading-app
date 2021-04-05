@@ -1,1 +1,1 @@
-{"version":3,"sources":["./src/styles.less"],"names":[],"mappings":"AAAA,8EAA8E","file":"styles.css","sourceRoot":"webpack:///"}
+{"version":3,"sources":["./src/styles.less"],"names":[],"mappings":"AAAA;EACI;AACJ;AAEA;EACI;AAAJ","file":"styles.css","sourcesContent":["app-user {\n    width: -webkit-fill-available;\n}\n\n.spacer{\n    flex: 1;\n}"],"sourceRoot":"webpack:///"}
