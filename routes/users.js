@@ -41,11 +41,10 @@ router.post('/', async (req, res) => {
 
   if (user === undefined) {
     const user = await users.registerUser(name, lastName, username, password, email);
-    let payload = { subject: foundUser.id};
-    let token = jwt.sign(payload, 'secretKey')
+    // let payload = { subject: user.id };
+    // let token = jwt.sign(payload, 'secretKey');
     res.status(200).send({ user: user });
-  } else
-    res.status(400).send({ error: 'user already exists' });
+  } else res.status(400).send({ error: 'user already exists' });
 });
 
 /**
