@@ -7,6 +7,7 @@ const swaggerUI = require('swagger-ui-express');
 const swaggerJSDoc = require('swagger-jsdoc');
 require('dotenv').config();
 const authRouter = require('./routes/auth');
+const cardsRouter = require('./routes/cards');
 
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
@@ -47,6 +48,7 @@ app.use(function (req, res, next) {
 });
 app.use('/', indexRouter);
 app.use('/u', usersRouter);
+app.use('/c', cardsRouter);
 app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(specs));
 app.use('/login', authRouter);
 
