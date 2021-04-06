@@ -18,7 +18,7 @@ class cardController {
     return r.rows;
   }
   async getAllFromUser(user) {
-    const r = await pool.query('select * from usercards where userid=$1', [user.userid]);
+    const r = await pool.query('select * from cards c, usercards uc where c.cardid=uc.cardid and uc.userid=$1', [user.userid]);
     return r.rows;
   }
   async grantToUser(cardid, user) {
