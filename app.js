@@ -6,6 +6,7 @@ const logger = require('morgan');
 const swaggerUI = require('swagger-ui-express');
 const swaggerJSDoc = require('swagger-jsdoc');
 require('dotenv').config();
+const authRouter = require('./routes/auth');
 
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
@@ -47,5 +48,6 @@ app.use(function (req, res, next) {
 app.use('/', indexRouter);
 app.use('/u', usersRouter);
 app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(specs));
+app.use('/login', authRouter);
 
 module.exports = app;

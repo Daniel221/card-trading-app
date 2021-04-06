@@ -1,6 +1,7 @@
 const usersController = require('../controllers/usersController');
 const users = new usersController();
 const router = require('express').Router();
+//const jwt = require('jsonwebtoken');
 
 router.get('/', async (req, res) => {
   const allUsers = await users.getAllUsers();
@@ -40,10 +41,11 @@ router.post('/', async (req, res) => {
 
   if (user === undefined) {
     const user = await users.registerUser(name, lastName, username, password, email);
+    let payload = { subject: foundUser.id};
+    let token = jwt.sign(payload, 'secretKey')
     res.status(200).send({ user: user });
-  } else {
+  } else
     res.status(400).send({ error: 'user already exists' });
-  }
 });
 
 /**
