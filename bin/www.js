@@ -28,17 +28,23 @@ const io = require('socket.io')(server, {
 
 io.on('connection', (socket) => {
   console.log('a user connected');
-  const chatID = socket.handshake.query.username;
-  socket.join(chatID);
 
-  socket.on('disconnect', () => {
-    socket.leave(chatID);
+  socket.on('login', ({ name, room }) => {
+    const user = { name, room, id: socket.id };
+    console.log(user);
+    socket.join(user.room);
+  });
+
+  socket.on('disconnect', ({ room }) => {
+    console.log('user disconected');
+    socket.leave(room);
   });
 
   socket.on('send_message', async (message) => {
     const { receiverChatID, senderChatID, content } = message;
+    console.log('message send');
     //const savemsg = await chat.saveMessage(senderChatID, receiverChatID, content);
-    socket.to(receiverChatID).emit('receive_message', {
+    socket.to(receiverChatID).emit('message', {
       content: content,
       senderChatID: senderChatID,
       receiverChatID: receiverChatID,

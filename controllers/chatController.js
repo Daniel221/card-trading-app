@@ -59,7 +59,6 @@ class chatController {
     );
 
     if (result1.rows[0] && result2.rows[0]) return {};
-
     return { error: 'problem adding message' };
   }
 
