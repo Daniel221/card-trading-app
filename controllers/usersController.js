@@ -58,6 +58,24 @@ class usersController {
     if (q.err) return { error: q.err };
     return q;
   }
+
+  async addContact(userid1, userid2){
+    const q = await pool.query(`insert into contactlist values ($1,$2), ($2,$1);`,[userid1,userid2]);
+    if (q.err) return { error: q.err };
+    return q;
+  }
+
+  async getContactsFrom(userid){
+    const q = await pool.query(`select u2.* from users u, users u2, contactlist c where u.userid=$1 and c.userid=u.userid and u2.userid=c.userfriend;`,[userid]);
+    if (q.err) return { error: q.err };
+    return q.rows;
+  }
+
+  async removeContact(userid1, userid2){
+    const q = await pool.query(`delete from contactlist where (userid=$1 and userfriend=$2) or (userid=$2 and userfriend=$1);`,[userid1,userid2]);
+    if (q.err) return { error: q.err };
+    return q;
+  }
 }
 
 module.exports = usersController;
