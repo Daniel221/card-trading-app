@@ -60,6 +60,8 @@ class usersController {
   }
 
   async addContact(userid1, userid2){
+    const alreadyFrens=await pool.query(`select * from contactlist where userid=$1 and userfriend=$2`,[userid1,userid2]);
+    if(alreadyFrens.rows[0]!=undefined)return {error:"Already friends"};
     const q = await pool.query(`insert into contactlist values ($1,$2), ($2,$1);`,[userid1,userid2]);
     if (q.err) return { error: q.err };
     return q;

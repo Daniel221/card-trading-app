@@ -217,7 +217,7 @@ router.get('/', async (req, res) => {
   if(!id||!oid) res.status(400).send({ error: "no id" });
   const data = await users.addContact(oid, id);
   if (data.error) res.status(400).send({ error: data.error });
-  else res.status(200).send('success');
+  else res.status(200).send({msg:'success'});
 });
 
 /**
@@ -249,13 +249,13 @@ router.get('/', async (req, res) => {
  *                items:
  *                  error: string
  */
- router.delete('/contacts/:oid', async (req, res) => {
-  const { oid } = req.params;
-  const { id } = req.body;
-  if(!id||!oid) res.status(400).send({ error: "no id" });
+ router.delete('/contacts', async (req, res) => {
+  const { oid } = req.query;
+  const { id } = req.query;
+  if(!id||!oid) return res.status(400).send({ error: "no id" });
   const data = await users.removeContact(oid, id);
   if (data.error) res.status(400).send({ error: data.error });
-  else res.status(200).send('success');
+  else res.status(200).send({msg:'success'});
 });
 
 module.exports = router;

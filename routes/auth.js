@@ -13,9 +13,17 @@ router.post('/', async (req, res)=>{
     if(foundUser.password !== userData.password){
         res.status(401).send('Contraseña incorrecta')
     }
-    let payload = { subject: foundUser.id};
+    let payload = { subject: foundUser.userid};
     let token = jwt.sign(payload, 'secretKey');
     res.status(200).send({token});
+});
+
+router.get('/',async (req,res)=>{
+    const {token}=req.query;
+    if(token)
+        res.status(200).send({userid:jwt.decode(token).subject})
+    else
+        res.status(400).send({userid:-1});
 });
 
 /*router.get('/login', (_, res)=>{
