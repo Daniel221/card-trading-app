@@ -14,12 +14,11 @@ router.post('/', async (req, res)=>{
         res.status(401).send('Contraseña incorrecta')
     }
     let payload = { subject: foundUser.id};
-    let token = jwt.sign(payload, 'secretKey')
-    res.status(200).send({token})
+    let token = jwt.sign(payload, 'secretKey');
+    res.status(200).send({token});
 });
 
 /*router.get('/login', (_, res)=>{
-    res.render('login');
 });
 
 router.get('/google', passport.authenticate('google', {scope: ['profile', 'email']}));
@@ -31,7 +30,7 @@ router.get(
         console.log(req.user);
         res.redirect('/profile');
     }
-); 
+);
 
 router.get('/google/logout', (req, res)=>{
     req.logout();

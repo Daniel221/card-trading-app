@@ -5,7 +5,10 @@ const lessMiddleware = require('less-middleware');
 const logger = require('morgan');
 const swaggerUI = require('swagger-ui-express');
 const swaggerJSDoc = require('swagger-jsdoc');
+//var passport = require('passport');
 require('dotenv').config();
+//require('./config/passport');
+
 const authRouter = require('./routes/auth');
 const cardsRouter = require('./routes/cards');
 
