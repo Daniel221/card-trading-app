@@ -94,8 +94,8 @@ router.post('/', async (req, res) => {
  *                  error: string
  */
 router.put('/:id', async (req, res) => {
-  const { name, lastName, username, password, img } = req.body;
-  const u = await users.editUser(req.params.id, { name, lastName, username, password, img });
+  const { name, lastName, username, password, img, profiletext } = req.body;
+  const u = await users.editUser(req.params.id, { name, lastName, username, password, img, profiletext });
   if (u.error) res.status(400).send({ error: u.error });
   else res.status(200).send({ name, lastName, username, password });
 });
@@ -134,6 +134,128 @@ router.get('/', async (req, res) => {
   console.log(data);
   if (data.error) res.status(400).send({ error: data.error });
   else res.status(200).send(data);
+});
+
+/**
+ * @swagger
+ * /u/contacts:
+ *  get:
+ *    summary: get all contacts from an user
+ *    parameters:
+ *      - in: path
+ *        required: true
+ *        name: user's id
+ *        description: an existing user's id
+ *        schema:
+ *          type: integer
+ *          format: int32
+ *    responses:
+ *        200:
+ *          description: an array of users as JSON objects
+ *          contents:
+ *            application/JSON:
+ *              schema:
+ *                type: array
+ *                items:
+ *                  type: object
+ *                  items:
+ *                    name: string
+ *                    lastName: string
+ *                    username: string
+ *                    profiletext: string
+ *                    password: string
+ *                    img: string
+ *        400:
+ *          description: could not get user list
+ *          contents:
+ *            application/JSON:
+ *              schema:
+ *                type: object
+ *                items:
+ *                  error: string
+ */
+ router.get('/contacts/:id', async (req, res) => {
+  const { id } = req.params;
+  if(!id) res.status(400).send({ error: "no id" });
+  const data = await users.getContactsFrom(id);
+  if (data.error) res.status(400).send({ error: data.error });
+  else res.status(200).send(data);
+});
+
+/**
+ * @swagger
+ * /u/contacts:
+ *  post:
+ *    summary: add a contact to an user
+ *    parameters:
+ *      - in: path
+ *        required: true
+ *        name: the id of the user to add as contact
+ *        description: an existing user's id
+ *        schema:
+ *          type: integer
+ *          format: int32
+ *    responses:
+ *        200:
+ *          description: added to contacts list
+ *          contents:
+ *            application/JSON:
+ *              schema:
+ *                type: string
+ *        400:
+ *          description: could not add contact
+ *          contents:
+ *            application/JSON:
+ *              schema:
+ *                type: object
+ *                items:
+ *                  error: string
+ */
+ router.post('/contacts/:oid', async (req, res) => {
+  const { oid } = req.params;
+  const { id } = req.body;
+  if(!id||!oid) res.status(400).send({ error: "no id" });
+  const data = await users.addContact(oid, id);
+  if (data.error) res.status(400).send({ error: data.error });
+  else res.status(200).send('success');
+});
+
+/**
+ * @swagger
+ * /u/contacts:
+ *  delete:
+ *    summary: remove a contact to an user
+ *    parameters:
+ *      - in: path
+ *        required: true
+ *        name: the id of the user to remove from contacts
+ *        description: an existing user's id
+ *        schema:
+ *          type: integer
+ *          format: int32
+ *    responses:
+ *        200:
+ *          description: removed from contacts list
+ *          contents:
+ *            application/JSON:
+ *              schema:
+ *                type: string
+ *        400:
+ *          description: could not remove contact
+ *          contents:
+ *            application/JSON:
+ *              schema:
+ *                type: object
+ *                items:
+ *                  error: string
+ */
+ router.delete('/contacts/:oid', async (req, res) => {
+  const { oid } = req.params;
+  const { id } = req.body;
+  if(!id||!oid) res.status(400).send({ error: "no id" });
+  const data = await users.removeContact(oid, id);
+  if (data.error) res.status(400).send({ error: data.error });
+  else res.status(200).send('success');
 });
 
 module.exports = router;
