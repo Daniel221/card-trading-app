@@ -1,7 +1,19 @@
 const usersController = require('../controllers/usersController');
 const users = new usersController();
 const router = require('express').Router();
-//const jwt = require('jsonwebtoken');
+const jwt = require('jsonwebtoken');
+
+/*function verifyToken(req, res, next){
+  if(!req.headers.authorization){
+    return res.status(401).send('Unauthorized request');
+  }
+  let token = req.headers.authorization.split(' ')[1];
+  if(!token) return res.status(401).send('Unauthorized request');
+  let payload = jwt.verify(token, 'secretKey');
+  if(!payload) return res.status(401).send('Unauthorized request');
+  req.id = payload.subject;
+  next();
+}*/
 
 router.get('/', async (req, res) => {
   const allUsers = await users.getAllUsers();
@@ -41,11 +53,10 @@ router.post('/', async (req, res) => {
 
   if (user === undefined) {
     const user = await users.registerUser(name, lastName, username, password, email);
-    let payload = { subject: foundUser.id};
-    let token = jwt.sign(payload, 'secretKey')
-    res.status(200).send({ user: user });
-  } else
-    res.status(400).send({ error: 'user already exists' });
+    let payload = { subject: user.id };
+    let token = jwt.sign(payload, 'secretKey');
+    res.status(200).send({ user: user, token: token});
+  } else res.status(400).send({ error: 'user already exists' });
 });
 
 /**
