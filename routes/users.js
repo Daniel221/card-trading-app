@@ -99,6 +99,8 @@ router.put('/:id', async (req, res) => {
   let token=undefined;
   if(checkin){
     token=jwt.sign({userid:id,checkin:checkin},'secretKey');
+  }else{
+    token=jwt.sign({userid:id},'secretKey');
   }
   const u = await users.editUser(req.params.id, { name, lastName, username, password, img, profiletext, checkin });
   if (u.error) res.status(400).send({ error: u.error });
