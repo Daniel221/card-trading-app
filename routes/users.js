@@ -53,7 +53,7 @@ router.post('/', async (req, res) => {
 
   if (user === undefined) {
     const user = await users.registerUser(name, lastName, username, password, email);
-    let payload = { subject: user.id };
+    let payload = { userid: user.id };
     let token = jwt.sign(payload, 'secretKey');
     res.status(200).send({ user: user, token: token});
   } else res.status(400).send({ error: 'user already exists' });
@@ -94,10 +94,15 @@ router.post('/', async (req, res) => {
  *                  error: string
  */
 router.put('/:id', async (req, res) => {
-  const { name, lastName, username, password, img, profiletext } = req.body;
-  const u = await users.editUser(req.params.id, { name, lastName, username, password, img, profiletext });
+  const { id } = req.params;
+  const { name, lastName, username, password, img, profiletext, checkin } = req.body;
+  let token=undefined;
+  if(checkin){
+    token=jwt.sign({userid:id,checkin:checkin},'secretKey');
+  }
+  const u = await users.editUser(req.params.id, { name, lastName, username, password, img, profiletext, checkin });
   if (u.error) res.status(400).send({ error: u.error });
-  else res.status(200).send({ name, lastName, username, password });
+  else res.status(200).send({ token: token });
 });
 
 /**

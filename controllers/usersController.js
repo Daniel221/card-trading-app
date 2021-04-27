@@ -46,7 +46,7 @@ class usersController {
     let params = [id];
     let qq = '';
     Object.keys(data).forEach((k) => {
-      if (data[k] && data[k].length > 3) {
+      if (data[k] && data[k].length > 0) {
         a++;
         params.push(data[k]);
         qq += k + '=$' + (a + 1) + ', ';
