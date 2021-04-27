@@ -21,8 +21,8 @@ class cardController {
     const r = await pool.query('select * from cards c, usercards uc where c.cardid=uc.cardid and uc.userid=$1', [user.userid]);
     return r.rows;
   }
-  async grantToUser(cardid, user) {
-    const cc = await pool.query('insert into usercards values($1,$2,$3)', [user.userid, cardid, 1]);
+  async grantToUser(cardid, userid) {
+    const cc = await pool.query('insert into usercards values($1,$2)', [userid, cardid]);
     return cc.rows[0];
   }
   async trade(cardid1, userid1, cardid2, userid2) {

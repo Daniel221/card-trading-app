@@ -51,4 +51,41 @@ router.get('/:id',async (req,res)=>{
     res.status(200).send(card);
 });
 
+/**
+ * @swagger
+ * /u/contacts:
+ *  post:
+ *    summary: grant a random card to an user
+ *    parameters:
+ *      - in: path
+ *        required: true
+ *        name: the id of the user to add as contact
+ *        description: an existing user's id
+ *        schema:
+ *          type: integer
+ *          format: int32
+ *    responses:
+ *        200:
+ *          description: granted
+ *          contents:
+ *            application/JSON:
+ *              schema:
+ *                type: string
+ *        400:
+ *          description: could not grant
+ *          contents:
+ *            application/JSON:
+ *              schema:
+ *                type: object
+ *                items:
+ *                  error: string
+ */
+router.post('/:userid',async (req,res)=>{
+    const { userid } = req.params;
+    const { cardid } = req.body;
+    if(!userid||!cardid)return res.status(400).send({error:"Not enough data"});
+    const data=await cards.grantToUser(cardid,userid);
+    res.status(200).send({data:data});
+});
+
 module.exports=router;
