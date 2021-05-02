@@ -83,7 +83,7 @@ router.get('/:id',async (req,res)=>{
 router.post('/:userid',async (req,res)=>{
     const { userid } = req.params;
     const { cardid } = req.body;
-    if(!userid||!cardid)return res.status(400).send({error:"Not enough data"});
+    if(userid==null||cardid==null)return res.status(400).send({error:"Not enough data"});
     const data=await cards.grantToUser(cardid,userid);
     res.status(200).send({data:data});
 });

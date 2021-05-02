@@ -183,7 +183,12 @@ router.get('/', async (req, res) => {
  */
  router.get('/contacts/:id', async (req, res) => {
   const { id } = req.params;
-  if(!id) res.status(400).send({ error: "no id" });
+  if(!id) return res.status(400).send({ error: "no id" });
+  const { otherId } = req.query;
+  if(otherId){
+    const dato=await users.areFrens(id, otherId);
+    return res.status(200).send(dato)
+  }
   const data = await users.getContactsFrom(id);
   if (data.error) res.status(400).send({ error: data.error });
   else res.status(200).send(data);
@@ -221,7 +226,7 @@ router.get('/', async (req, res) => {
  router.post('/contacts/:oid', async (req, res) => {
   const { oid } = req.params;
   const { id } = req.body;
-  if(!id||!oid) res.status(400).send({ error: "no id" });
+  if(!id||!oid) return res.status(400).send({ error: "no id" });
   const data = await users.addContact(oid, id);
   if (data.error) res.status(400).send({ error: data.error });
   else res.status(200).send({msg:'success'});
@@ -263,6 +268,84 @@ router.get('/', async (req, res) => {
   const data = await users.removeContact(oid, id);
   if (data.error) res.status(400).send({ error: data.error });
   else res.status(200).send({msg:'success'});
+});
+
+/**
+ * @swagger
+ * /u/trades:
+ *  get:
+ *    summary: get all trades of an user
+ *    parameters:
+ *      - in: path
+ *        required: true
+ *        name: user's id
+ *        description: an existing user's id
+ *        schema:
+ *          type: integer
+ *          format: int32
+ *    responses:
+ *        200:
+ *          description: an array of trades as JSON objects
+ *          contents:
+ *            application/JSON:
+ *              schema:
+ *                type: array
+ *                items:
+ *                  type: object
+ *                  items:
+ *                    card1: object
+ *                    card2: object
+ *                    user1: object
+ *                    user2: object
+ *                    quantity1: integer
+ *                    quantity2: integer
+ *                    date: integer
+ *        400:
+ *          description: could not get
+ *          contents:
+ *            application/JSON:
+ *              schema:
+ *                type: object
+ *                items:
+ *                  error: string
+ */
+ router.get('/trades/:id', async (req, res) => {
+  const { id } = req.params;
+  if(!id) return res.status(400).send({ error: "no id" });
+  const data = await users.getTradesForUser(id);
+  if (data.error) res.status(400).send({ error: data.error });
+  else res.status(200).send(data);
+});
+
+/**
+ * @swagger
+ * /u/trades:
+ *  post:
+ *    summary: accepts or declines a trade
+ *    responses:
+ *        200:
+ *          description: processed trade
+ *          contents:
+ *            application/JSON:
+ *              schema:
+ *                type: string
+ *        400:
+ *          description: could not process trade
+ *          contents:
+ *            application/JSON:
+ *              schema:
+ *                type: object
+ *                items:
+ *                  error: string
+ */
+router.post('/trades',async (req,res)=>{
+  const { u1,u2,c1,c2,date,mode }=req.body;
+  let data;
+  if(mode==0) data=await users.addTrade(u1,u2,c1,c2,date);
+  else if(mode==1) data=await users.acceptTrade(u1,u2,c1,c2,date);
+  else data=await users.declineTrade(u1,u2,c1,c2,date);
+  if (data.error) res.status(400).send({ error: data.error });
+  else res.status(200).send(data);
 });
 
 module.exports = router;
