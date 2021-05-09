@@ -11,7 +11,7 @@ require('dotenv').config();
 
 const authRouter = require('./routes/auth');
 const cardsRouter = require('./routes/cards');
-
+const chatRouter = require('./routes/chat');
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
 
@@ -54,5 +54,6 @@ app.use('/u', usersRouter);
 app.use('/c', cardsRouter);
 app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(specs));
 app.use('/login', authRouter);
+app.use('/chat', chatRouter);
 
 module.exports = app;
