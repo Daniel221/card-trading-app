@@ -1,16 +1,4 @@
-const { Pool } = require('pg');
-
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: {
-    rejectUnauthorized: false,
-  },
-});
-
-pool.connect((err) => {
-  if (err) console.error('DB conection error', err.stack);
-  else console.log('DB conected');
-});
+const pool = require('./dbConn');
 
 class cardController {
   async getList() {
@@ -18,7 +6,10 @@ class cardController {
     return r.rows;
   }
   async getAllFromUser(user) {
-    const r = await pool.query('select * from cards c, usercards uc where c.cardid=uc.cardid and uc.userid=$1', [user.userid]);
+    const r = await pool.query(
+      'select * from cards c, usercards uc where c.cardid=uc.cardid and uc.userid=$1',
+      [user.userid]
+    );
     return r.rows;
   }
   async grantToUser(cardid, userid) {
