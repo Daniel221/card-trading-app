@@ -31,6 +31,40 @@ class cardController {
     const card = await pool.query('select * from cards where cardid=$1', [cardid]);
     return card.rows[0];
   }
+
+  async getAllCards() {
+    return (await pool.query('select * from cards')).rows;
+  }
+
+  async updateCard(cardid, title, description, img, type) {
+    const changes = await pool.query(
+      'update cards set title = $1, description = $2, img = $3, type = $4 where cardid = $5 returning *',
+      [title, description, img, type, cardid]
+    );
+
+    if (changes.rows.length > 0) return { ok: 'Card updated' };
+    return { error: 'card not updated' };
+  }
+
+  async addCard(title, description, img, type) {
+    const cardid = await this.generateCardId();
+    const changes = await pool.query(
+      'insert into cards (cardid, title, description, img, type) values ($1, $2, $3, $4, $5) returning *',
+      [cardid, title, description, img, type]
+    );
+
+    if (changes.rows.length > 0) return { ok: 'Card added' };
+    return { error: 'card not added' };
+  }
+
+  async generateCardId() {
+    return (await pool.query('select max(cardid) from cards')).rows[0].max + 1;
+  }
+
+  async deleteCard(cardid) {
+    await pool.query('delete from usercards where cardid = $1', cardid);
+    await pool.query('delete from cards where cardid = $1', cardid);
+  }
 }
 
 module.exports = cardController;
