@@ -70,7 +70,6 @@ app.use('/chat', chatRouter);
 
 app.post('/file', upload.single('file'), (req, res, next)=>{
   const file = req.file;
-  console.log(file);
   if(!file) return res.status(400).send({error: "Please include a file"});
   res.send({msg:"wow"})
 });

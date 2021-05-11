@@ -23,6 +23,7 @@ class cardController {
     return q;
   }
   async deleteCard(cardid){
+    const q2 = await pool.query('delete from usercards where cardid=$1', [cardid]);
     const q = await pool.query('delete from cards where cardid=$1', [cardid]);
     if (q.err) return { error: q.err };
     return q;
