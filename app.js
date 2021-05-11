@@ -7,6 +7,7 @@ const swaggerUI = require('swagger-ui-express');
 const swaggerJSDoc = require('swagger-jsdoc');
 //var passport = require('passport');
 require('dotenv').config();
+const multer=require('multer');
 //require('./config/passport');
 const cors = require('cors');
 const morgan = require('morgan');
@@ -16,7 +17,7 @@ const users = new usersController();
 
 const authRouter = require('./routes/auth');
 const cardsRouter = require('./routes/cards');
-
+const chatRouter = require('./routes/chat');
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
 
@@ -47,6 +48,17 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(lessMiddleware(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'uploads')));
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb)=>{
+    cb(null, 'uploads');
+  },
+  filename: (req, file, cb)=>{
+    cb(null, file.originalname);
+  }
+});
+const upload = multer({storage});
 
 app.use(function (req, res, next) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -93,5 +105,12 @@ app.use('/u', usersRouter);
 app.use('/c', cardsRouter);
 app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(specs));
 app.use('/login', authRouter);
+app.use('/chat', chatRouter);
+
+app.post('/file', upload.single('file'), (req, res, next)=>{
+  const file = req.file;
+  if(!file) return res.status(400).send({error: "Please include a file"});
+  res.send({msg:"wow"})
+});
 
 module.exports = app;

@@ -1,16 +1,4 @@
-const { Pool } = require('pg');
-
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: {
-    rejectUnauthorized: false,
-  },
-});
-
-pool.connect((err) => {
-  if (err) console.error('DB conection error', err.stack);
-  else console.log('DB conected');
-});
+const pool = require('./dbConn');
 
 class chatController {
   async genMsgID() {
@@ -27,11 +15,10 @@ class chatController {
   }
 
   async getChatID(senderID, receiverID) {
-    let chatID = await pool.query('select chatid from chats where user1 = $1 and user2 = $2', [
-      senderID,
-      receiverID,
-    ]);
-
+    let chatID = await pool.query(
+      'select chatid from chats where (user1 = $1 and user2 = $2) or (user1 = $2 and user2 = $1)',
+      [senderID, receiverID]
+    );
     if (chatID.rows.length === 0) {
       chatID = await this.genChatID(senderID, receiverID);
       await pool.query('insert into chats (user1, user2, chatID) values ($1,$2,$3)', [
@@ -39,34 +26,29 @@ class chatController {
         receiverID,
         chatID,
       ]);
+      return chatID;
     }
-    return chatID;
+    return chatID.rows[0].chatid;
   }
 
-  async saveMessage(senderID, receiverID, msg) {
+  async saveMessage(senderID, receiverID, msg, date) {
     const msgid = await this.genMsgID();
     const chatid = await this.getChatID(senderID, receiverID);
     const result1 = await pool.query(
-      'insert into messages (msgid, chatid, msg) values ($1, $2, $3) returning *',
-      [msgid, chatid, msg]
+      'insert into messages (msgid, chatid, senddate, msg, senderid) values ($1, $2, $3, $4, $5) returning *',
+      [msgid, chatid, date, msg, senderID]
     );
 
-    const msgid2 = await this.genMsgID();
-    const chatid2 = await this.getChatID(receiverID, senderID);
-    const result2 = await pool.query(
-      'insert into messages (msgid, chatid, msg) values ($1, $2, $3) returning *',
-      [msgid2, chatid2, msg]
-    );
-
-    if (result1.rows[0] && result2.rows[0]) return {};
+    if (result1.rows.length > 0) return {};
     return { error: 'problem adding message' };
   }
 
   async getChat(senderID, receiverID) {
     const chatid = await this.getChatID(senderID, receiverID);
-    const messages = await pool.query('select senddate, msg from messages where chatid = $1', [
-      chatid,
-    ]);
+    const messages = await pool.query(
+      'select senddate, msg, senderid from messages where chatid = $1',
+      [chatid]
+    );
 
     return messages.rows;
   }

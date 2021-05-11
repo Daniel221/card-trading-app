@@ -12,17 +12,29 @@ router.post('/', async (req, res)=>{
     let userData = req.body;
     let foundUser = await users.getUserByEmail(userData.email);
     if(!foundUser){
-        res.status(401).send('Email no encontrado')
+        return res.status(401).send('Email no encontrado')
     }else
     if(foundUser.password !== userData.password){
-        res.status(401).send('Contraseña incorrecta')
+        return res.status(401).send('Contraseña incorrecta')
     }
-    let payload = { subject: foundUser.id};
+    let payload = { userid: foundUser.userid, checkin: foundUser.checkin};
     let token = jwt.sign(payload, 'secretKey');
     res.status(200).send({token});
 });
 
 /*router.get('/google', passport.authenticate('google', {scope: ['profile', 'email']}));
+router.get('/',async (req,res)=>{
+    const {token}=req.query;
+    if(token)
+        res.status(200).send(jwt.decode(token))
+    else
+        res.status(400).send({userid:-1});
+});
+
+/*router.get('/login', (_, res)=>{
+});
+
+router.get('/google', passport.authenticate('google', {scope: ['profile', 'email']}));
 
 router.get(
     '/google/callback',

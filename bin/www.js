@@ -40,14 +40,18 @@ io.on('connection', (socket) => {
     socket.leave(room);
   });
 
+  socket.on('logout', ({ room }) => {
+    socket.leave(room);
+  });
+
   socket.on('send_message', async (message) => {
-    const { receiverChatID, senderChatID, content } = message;
-    console.log('message send');
-    //const savemsg = await chat.saveMessage(senderChatID, receiverChatID, content);
-    socket.to(receiverChatID).emit('message', {
-      content: content,
-      senderChatID: senderChatID,
-      receiverChatID: receiverChatID,
+    const { addresseeid, userid, msg, date } = message;
+    console.log('message send' + ` ${addresseeid}_${userid}`);
+    socket.to(`${addresseeid}_${userid}`).emit('message', {
+      msg,
+      addresseeid,
+      userid,
+      date,
     });
   });
 });

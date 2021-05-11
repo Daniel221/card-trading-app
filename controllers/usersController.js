@@ -1,16 +1,4 @@
-const { Pool } = require('pg');
-
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: {
-    rejectUnauthorized: false,
-  },
-});
-
-pool.connect((err) => {
-  if (err) console.error('DB conection error', err.stack);
-  else console.log('DB conected');
-});
+const pool = require('./dbConn');
 
 class usersController {
   async createId() {
@@ -46,7 +34,7 @@ class usersController {
     let params = [id];
     let qq = '';
     Object.keys(data).forEach((k) => {
-      if (data[k] && data[k].length > 3) {
+      if (data[k] && data[k].length > 0) {
         a++;
         params.push(data[k]);
         qq += k + '=$' + (a + 1) + ', ';
@@ -59,22 +47,94 @@ class usersController {
     return q;
   }
 
-  async addContact(userid1, userid2){
-    const q = await pool.query(`insert into contactlist values ($1,$2), ($2,$1);`,[userid1,userid2]);
+  async addContact(userid1, userid2) {
+    const alreadyFrens = await pool.query(
+      `select * from contactlist where userid=$1 and userfriend=$2`,
+      [userid1, userid2]
+    );
+    if (alreadyFrens.rows[0] != undefined) return { error: 'Already friends' };
+    const q = await pool.query(`insert into contactlist values ($1,$2), ($2,$1);`, [
+      userid1,
+      userid2,
+    ]);
     if (q.err) return { error: q.err };
     return q;
   }
 
-  async getContactsFrom(userid){
-    const q = await pool.query(`select u2.* from users u, users u2, contactlist c where u.userid=$1 and c.userid=u.userid and u2.userid=c.userfriend;`,[userid]);
+  async getContactsFrom(userid) {
+    const q = await pool.query(
+      `select u2.* from users u, users u2, contactlist c where u.userid=$1 and c.userid=u.userid and u2.userid=c.userfriend;`,
+      [userid]
+    );
     if (q.err) return { error: q.err };
     return q.rows;
   }
 
-  async removeContact(userid1, userid2){
-    const q = await pool.query(`delete from contactlist where (userid=$1 and userfriend=$2) or (userid=$2 and userfriend=$1);`,[userid1,userid2]);
+  async removeContact(userid1, userid2) {
+    const q = await pool.query(
+      `delete from contactlist where (userid=$1 and userfriend=$2) or (userid=$2 and userfriend=$1);`,
+      [userid1, userid2]
+    );
     if (q.err) return { error: q.err };
     return q;
+  }
+
+  async areFrens(userid1, userid2) {
+    const q = await pool.query(`select * from contactlist where userid=$2 and userfriend=$1;`, [
+      userid1,
+      userid2,
+    ]);
+    return q.rows;
+  }
+
+  async addTrade(uid1, uid2, c1, c2, date) {
+    const q = await pool.query(`insert into trades values ($1,$2,$3,$4,$5)`, [
+      uid1,
+      uid2,
+      c1,
+      c2,
+      date,
+    ]);
+    if (q.err) return { error: q.err };
+    return q;
+  }
+
+  async getTradesForUser(uid) {
+    const q = await pool.query(
+      `select u1.username, u1.userid, to_json(c1) card1, to_json(c2) card2, t."date" from users u1, users u2, cards c1, cards c2, trades t where t.user1=u1.userid and t.user2=u2.userid and t.card1=c1.cardid and t.card2=c2.cardid and t.user2=$1;`,
+      [uid]
+    );
+    if (q.err) return { error: q.err };
+    return q.rows;
+  }
+
+  async acceptTrade(uid1, uid2, c1, c2, date) {
+    const t1 = await pool.query(
+      `with cte as (select id from usercards where cardid = $1 and userid = $2 limit 1) update usercards u set userid = $3 from cte where u.id = cte.id returning u.id;`,
+      [c1, uid1, uid2]
+    );
+    let t2;
+    if (t1.rows.length > 0)
+      t2 = await pool.query(
+        `with cte as (select id from usercards where cardid = $1 and userid = $2 limit 1) update usercards u set userid = $3 from cte where u.id = cte.id returning u.id;`,
+        [c2, uid2, uid1]
+      );
+    const d = await pool.query(
+      `delete from trades where user1=$1 and user2=$2 and card1=$3 and card2=$4 and date=$5;`,
+      [uid1, uid2, c1, c2, date]
+    );
+    if (t1.rows.length < 1 || t2.rows.length < 1) return { error: 'A card is no longer available' };
+    if (t1.err || t2.err || d.err) return { error: t1.err || t2.err || d.err };
+    return { msg: 'success' };
+  }
+
+  async declineTrade(uid1, uid2, c1, c2, date) {
+    const d = await pool.query(
+      `delete from trades where user1=$1 and user2=$2 and card1=$3 and card2=$4 and date=$5;`,
+      [uid1, uid2, c1, c2, date]
+    );
+    if (d.err) return { error: d.err };
+    return { msg: 'success' };
   }
 }
 
