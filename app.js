@@ -8,6 +8,11 @@ const swaggerJSDoc = require('swagger-jsdoc');
 //var passport = require('passport');
 require('dotenv').config();
 //require('./config/passport');
+const cors = require('cors');
+const morgan = require('morgan');
+const axios = require('axios').default;
+const usersController = require('./controllers/usersController');
+const users = new usersController();
 
 const authRouter = require('./routes/auth');
 const cardsRouter = require('./routes/cards');
@@ -49,6 +54,40 @@ app.use(function (req, res, next) {
   res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
   next();
 });
+
+app.use(cors({origin: "*"}));
+app.use(morgan('tiny'));
+
+app.use((req, res, next) => {
+  if (req.header('Authorization')) {
+    req.token = req.header('Authorization').replace('Bearer ', '');
+    console.log("en algun momento fue valido");
+    return next();
+  }
+  res.status(401).send('401 unauthorized');
+});
+
+app.use(async (req, res, next) => {
+  try {
+    const response = await axios.get(`https://oauth2.googleapis.com/tokeninfo?id_token=${req.token}`);
+    const user = await users.getUserByEmail(response.data.email);
+    //console.log(user);
+    //console.log(response.data);
+    if (!!user) { // (!!user === Boolean(user)) = true
+      console.log("se pudo segundo w");
+      return next();
+    }
+    if (req.originalUrl.includes('/login')) {
+      let u = response.data;
+      await users.registerUser(u.given_name, u.family_name, u.name, u.password, u.email);
+      return next();
+    }
+    res.status(401).send('401 unauthorized');
+  } catch (err) {
+    res.send(err);
+  }
+});
+
 app.use('/', indexRouter);
 app.use('/u', usersRouter);
 app.use('/c', cardsRouter);

@@ -4,6 +4,10 @@ const router = require('express').Router();
 const jwt = require('jsonwebtoken');
 //const passport = require('passport');
 
+router.get('/', (_, res) => {
+    res.send({status: 200, message: 'Logged correctly'});
+  });
+
 router.post('/', async (req, res)=>{
     let userData = req.body;
     let foundUser = await users.getUserByEmail(userData.email);
@@ -18,10 +22,7 @@ router.post('/', async (req, res)=>{
     res.status(200).send({token});
 });
 
-/*router.get('/login', (_, res)=>{
-});
-
-router.get('/google', passport.authenticate('google', {scope: ['profile', 'email']}));
+/*router.get('/google', passport.authenticate('google', {scope: ['profile', 'email']}));
 
 router.get(
     '/google/callback',
