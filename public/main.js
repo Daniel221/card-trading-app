@@ -1004,7 +1004,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-const SOCKET_ENDPOINT = 'ws://https://card-trading-api-dev.herokuapp.com/';
+const SOCKET_ENDPOINT = 'ws://https://card-trading-api-dev.herokuapp.com';
 class SocketService {
     constructor() {
         this.socket = Object(socket_io_client__WEBPACK_IMPORTED_MODULE_1__["io"])(SOCKET_ENDPOINT);
@@ -2001,7 +2001,7 @@ function ChatInboxComponent_div_7_Template(rf, ctx) { if (rf & 1) {
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
     _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("message", x_r1.msg)("date", x_r1.senddate);
 } }
-const CHAT_API = 'https://card-trading-api-dev.herokuapp.com//chat';
+const CHAT_API = 'https://card-trading-api-dev.herokuapp.com/chat';
 class ChatInboxComponent {
     constructor(socketService, http) {
         this.socketService = socketService;
