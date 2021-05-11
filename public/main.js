@@ -1608,7 +1608,7 @@ function AdminComponent_div_2_Template(rf, ctx) { if (rf & 1) {
     _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵproperty"]("smol", true)("id", c_r1.cardid)("title", c_r1.title)("description", c_r1.description)("img", c_r1.img)("type", c_r1.type);
 } }
 const _c0 = function (a0) { return { "border-color": a0 }; };
-const API_URL = 'https://card-trading-api-dev.herokuapp.com/';
+const API_URL = 'https://card-trading-api-dev.herokuapp.com';
 class AdminComponent {
     constructor(authService, router, http) {
         this.authService = authService;
@@ -2581,7 +2581,7 @@ function HeaderComponent_li_10_Template(rf, ctx) { if (rf & 1) {
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ctx_r3.isAdmin);
 } }
 const _c1 = function () { return { "pointer-events": "auto" }; };
-const API_URL = 'https://card-trading-api-dev.herokuapp.com/';
+const API_URL = 'https://card-trading-api-dev.herokuapp.com';
 class HeaderComponent {
     constructor(_authService, http) {
         this._authService = _authService;
