@@ -12,6 +12,21 @@ class cardController {
     );
     return r.rows;
   }
+  async createCard(card){
+    const res = await pool.query('insert into cards values($1,$2,$3,$4,$5)', Object.values(card));
+    if (res.err) return { error: res.err };
+    return res.rows[0];
+  }
+  async updateCard(card){
+    const q = await pool.query('update cards set title=$2, description=$3, img=$4, type=$5 where cardid=$1', Object.values(card));
+    if (q.err) return { error: q.err };
+    return q;
+  }
+  async deleteCard(cardid){
+    const q = await pool.query('delete from cards where cardid=$1', [cardid]);
+    if (q.err) return { error: q.err };
+    return q;
+  }
   async grantToUser(cardid, userid) {
     const cc = await pool.query('insert into usercards values($1,$2)', [userid, cardid]);
     return cc.rows[0];

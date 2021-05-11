@@ -8,10 +8,10 @@ router.post('/', async (req, res)=>{
     let userData = req.body;
     let foundUser = await users.getUserByEmail(userData.email);
     if(!foundUser){
-        res.status(401).send('Email no encontrado')
+        return res.status(401).send('Email no encontrado')
     }else
     if(foundUser.password !== userData.password){
-        res.status(401).send('Contraseña incorrecta')
+        return res.status(401).send('Contraseña incorrecta')
     }
     let payload = { userid: foundUser.userid, checkin: foundUser.checkin};
     let token = jwt.sign(payload, 'secretKey');

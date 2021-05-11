@@ -5,7 +5,7 @@ const router = require('express').Router();
 router.post('/', async (req, res) => {
   const { addresseeid, userid, msg, date } = req.body;
   await chat.saveMessage(userid, addresseeid, msg, date);
-  res.status(200).send('ok');
+  res.status(200).send({msg:'ok'});
 });
 
 router.get('/', async (req, res) => {
