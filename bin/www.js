@@ -5,8 +5,6 @@
 const app = require('../app');
 const debug = require('debug')('adopt-me:server');
 const http = require('http');
-const ChatController = require('../controllers/chatController');
-const chat = new ChatController();
 
 /**
  * Get port from environment and store in Express.
@@ -20,11 +18,15 @@ app.set('port', port);
  */
 
 const server = http.createServer(app);
-const io = require('socket.io')(server, {
-  cors: {
-    origins: ['http://locahost:4200'],
-  },
-});
+const io = require('socket.io')(
+  server,
+  { secure: true },
+  {
+    cors: {
+      origins: ['http://locahost:4200'],
+    },
+  }
+);
 
 io.on('connection', (socket) => {
   console.log('a user connected');
