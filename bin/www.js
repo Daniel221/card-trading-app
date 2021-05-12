@@ -18,15 +18,12 @@ app.set('port', port);
  */
 
 const server = http.createServer(app);
-const io = require('socket.io')(
-  server,
-  { secure: true },
-  {
-    cors: {
-      origins: ['http://locahost:4200'],
-    },
-  }
-);
+const io = require('socket.io')(server, {
+  secure: true,
+  cors: {
+    origins: ['http://locahost:4200'],
+  },
+});
 
 io.on('connection', (socket) => {
   console.log('a user connected');
