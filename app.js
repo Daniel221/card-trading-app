@@ -70,33 +70,43 @@ app.use(function (req, res, next) {
 app.use(cors({origin: "*"}));
 app.use(morgan('tiny'));
 
-app.use((req, res, next) => {
+/*app.use((req, res, next) => {
   if (req.header('Authorization')) {
     req.token = req.header('Authorization').replace('Bearer ', '');
     console.log("en algun momento fue valido");
     return next();
   }
   res.status(401).send('401 unauthorized');
-});
+});*/
 
 app.use(async (req, res, next) => {
   try {
-    const response = await axios.get(`https://oauth2.googleapis.com/tokeninfo?id_token=${req.token}`);
-    const user = await users.getUserByEmail(response.data.email);
-    //console.log(user);
-    //console.log(response.data);
-    if (!!user) { // (!!user === Boolean(user)) = true
-      console.log("se pudo segundo w");
-      return next();
+    //console.log("AAAAAAAAAAAAA esta usando el primer md");
+    if (!req.header('Authorization')){
+      //console.log("AAAAAAAAAAAAA paso prueba1");
+      next(); 
+    } else{
+      //console.log("AAAAAAAAAAAAA esta haciendo algo de headers");
+      req.token = req.header('Authorization').replace('Bearer ', '');
+      const response = await axios.get(`https://oauth2.googleapis.com/tokeninfo?id_token=${req.token}`);
+      const user = await users.getUserByEmail(response.data.email);
+      //console.log(user);
+      //console.log(user);
+      //console.log(response.data);
+      if (!!user) { // (!!user === Boolean(user)) = true
+        req.usuario = user;
+        return next();
+      }
+      else{
+        let u = response.data;
+        let ru = await users.registerUser(u.given_name, u.family_name, u.name, u.password, u.email);
+        req.usuario = ru;
+        return next();
+      }
     }
-    if (req.originalUrl.includes('/login')) {
-      let u = response.data;
-      await users.registerUser(u.given_name, u.family_name, u.name, u.password, u.email);
-      return next();
-    }
-    res.status(401).send('401 unauthorized');
+    
   } catch (err) {
-    res.send(err);
+    return res.send(err);
   }
 });
 
