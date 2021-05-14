@@ -281,6 +281,7 @@ router.delete('/contacts', async (req, res) => {
   const { oid } = req.query;
   const { id } = req.query;
   if (!id || !oid) return res.status(400).send({ error: 'no id' });
+  console.log('is here');
   const data = await users.removeContact(oid, id);
   if (data.error) res.status(400).send({ error: data.error });
   else res.status(200).send({ msg: 'success' });
