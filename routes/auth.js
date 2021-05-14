@@ -58,7 +58,7 @@ router.get('/', async (req, res) => {
 router.post('/', async (req, res)=>{
     let userData = req.body;
     //let foundUser = await users.getUserByEmail(userData.email);
-    let foundUser = await users.getByCredentials(userData.email, userData.username);
+    let foundUser = await users.getByCredentials(userData.email);
     if(!foundUser){
         return res.status(401).send('Email no encontrado')
     }else if(foundUser.password !== userData.password){
