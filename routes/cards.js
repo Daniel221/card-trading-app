@@ -126,18 +126,18 @@ router.put('/',async (req,res)=>{
 /**
  * @swagger
  * /c:
- *  put:
- *    summary: update a card
+ *  delete:
+ *    summary: deletes a card
  *    parameters:
- *      - in: body
+ *      - in: params
  *        required: true
  *        name: card
- *        description: the changed card
+ *        description: the card's id
  *        schema:
  *          type: object
  *    responses:
  *        200:
- *          description: updated
+ *          description: deleted
  *          contents:
  *            application/JSON:
  *              schema:
