@@ -50,7 +50,7 @@ io.on('connection', (socket) => {
       msg,
       addresseeid,
       userid,
-      date,
+      senddate: date,
     });
   });
 });
