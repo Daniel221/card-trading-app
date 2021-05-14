@@ -21,7 +21,7 @@ class usersController {
     return user.rows[0];
   }
   async getByCredentials(email, username){
-    const user = await pool.query('select * from users where email = $1 or username = $2', [email, username]);
+    const user = await pool.query('select * from users where email = $1 or username = $1', [email]);
     return user.rows[0];
   }
   async registerUser(name, lastName, username, password, email) {
