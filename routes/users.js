@@ -3,23 +3,67 @@ const users = new usersController();
 const router = require('express').Router();
 const jwt = require('jsonwebtoken');
 
-/*function verifyToken(req, res, next){
-  if(!req.headers.authorization){
-    return res.status(401).send('Unauthorized request');
-  }
-  let token = req.headers.authorization.split(' ')[1];
-  if(!token) return res.status(401).send('Unauthorized request');
-  let payload = jwt.verify(token, 'secretKey');
-  if(!payload) return res.status(401).send('Unauthorized request');
-  req.id = payload.subject;
-  next();
-}*/
-
+/**
+ * @swagger
+ * /u:
+ *  get:
+ *    summary: get all users from the database
+ *    responses:
+ *        200:
+ *          description: an array of users as JSON objects
+ *          contents:
+ *            application/JSON:
+ *              schema:
+ *                type: array
+ *                items:
+ *                  type: object
+ *                  items:
+ *                    name: string
+ *                    lastName: string
+ *                    username: string
+ *                    password: string
+ *                    img: string
+ *        400:
+ *          description: could not get user list
+ *          contents:
+ *            application/JSON:
+ *              schema:
+ *                type: object
+ *                items:
+ *                  error: string
+ */
 router.get('/', async (req, res) => {
   const allUsers = await users.getAllUsers();
   res.status(200).send(allUsers);
 });
 
+/**
+ * @swagger
+ * /u:
+ *  get:
+ *    summary: gets a specific user from the database
+ *    parameters:
+ *      - in: path
+ *        required: true
+ *        name: user's id
+ *        description: an existing user's id
+ *        schema:
+ *          type: integer
+ *          format: int32
+ *    responses:
+ *        200:
+ *          description: an array of users as JSON objects
+ *          contents:
+ *            application/JSON:
+ *              schema:
+ *                type: object
+ *                items:
+ *                  name: string
+ *                  lastName: string
+ *                  username: string
+ *                  password: string
+ *                  img: string
+ */
 router.get('/:id', async (req, res) => {
   const { id } = req.params;
   const user = await users.getUserById(id);
@@ -108,27 +152,27 @@ router.put('/:id', async (req, res) => {
 });
 
 /**
- * @swagger
- * /u:
- *  get:
- *    summary: get all users from the database
- *    responses:
+ *  @swagger
+ *  /u/{id}:
+ *    delete:
+ *      summary: deletes an user
+ *      parameters:
+ *        - in: path
+ *          required: true
+ *          name: user's id
+ *          description: an existing user's id
+ *          schema:
+ *            type: integer
+ *            format: int32
+ *      responses:
  *        200:
- *          description: an array of users as JSON objects
+ *          description: deleted
  *          contents:
  *            application/JSON:
  *              schema:
- *                type: array
- *                items:
- *                  type: object
- *                  items:
- *                    name: string
- *                    lastName: string
- *                    username: string
- *                    password: string
- *                    img: string
+ *                type: string
  *        400:
- *          description: could not get user list
+ *          description: could not edit user
  *          contents:
  *            application/JSON:
  *              schema:
@@ -136,11 +180,11 @@ router.put('/:id', async (req, res) => {
  *                items:
  *                  error: string
  */
-router.get('/', async (req, res) => {
-  const data = await users.getList();
-  console.log(data);
-  if (data.error) res.status(400).send({ error: data.error });
-  else res.status(200).send(data);
+router.delete('/:id', async (req, res) => {
+  const { id } = req.params;
+  const u = await users.deleteUser(id);
+  if (u.error) res.status(400).send({ error: u.error });
+  else res.status(200).send({ msg: "deleted user" });
 });
 
 /**

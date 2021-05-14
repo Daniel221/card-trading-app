@@ -45,6 +45,26 @@ router.get('/',async (req,res)=>{
     else res.status(200).send(data);
 });
 
+/**
+ * @swagger
+ * /c/:id:
+ *  get:
+ *    summary: gets a card
+ *    parameters:
+ *      - in: params
+ *        required: true
+ *        name: card
+ *        description: the card's id
+ *        schema:
+ *          type: object
+ *    responses:
+ *        200:
+ *          description: the given card
+ *          contents:
+ *            application/JSON:
+ *              schema:
+ *                type: object
+ */
 router.get('/:id',async (req,res)=>{
     const {id}=req.params;
     const card=await cards.getCard(id);
@@ -126,18 +146,18 @@ router.put('/',async (req,res)=>{
 /**
  * @swagger
  * /c:
- *  put:
- *    summary: update a card
+ *  delete:
+ *    summary: deletes a card
  *    parameters:
- *      - in: body
+ *      - in: params
  *        required: true
  *        name: card
- *        description: the changed card
+ *        description: the card's id
  *        schema:
  *          type: object
  *    responses:
  *        200:
- *          description: updated
+ *          description: deleted
  *          contents:
  *            application/JSON:
  *              schema:

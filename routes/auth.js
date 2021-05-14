@@ -3,8 +3,20 @@ const users = new usersController();
 const router = require('express').Router();
 const jwt = require('jsonwebtoken');
 const axios = require('axios').default;
-//const passport = require('passport');
 
+/**
+ * @swagger
+ * /login:
+ *  get:
+ *    summary: logs in a google socialUser
+ *    responses:
+ *        200:
+ *          description: resulting token
+ *          contents:
+ *            application/JSON:
+ *              schema:
+ *                type: object
+ */
 router.get('/', async (req, res) => {
     const {token}=req.query;
     if(token == null){
@@ -15,50 +27,46 @@ router.get('/', async (req, res) => {
     }else return res.status(200).send(jwt.decode(token))
 });
 
+/**
+ * @swagger
+ * /login:
+ *  post:
+ *    summary: logs in a non-google user
+ *    parameters:
+ *      - in: body
+ *        required: true
+ *        name: user
+ *        description: the user to log in
+ *        schema:
+ *          type: object
+ *    responses:
+ *        200:
+ *          description: deleted
+ *          contents:
+ *            application/JSON:
+ *              schema:
+ *                type: string
+ *        401:
+ *          description: credentials error
+ *          contents:
+ *            application/JSON:
+ *              schema:
+ *                type: object
+ *                items:
+ *                  error: string
+ */
 router.post('/', async (req, res)=>{
     let userData = req.body;
-    //console.log(userData);
-    let foundUser = await users.getUserByEmail(userData.email);
+    //let foundUser = await users.getUserByEmail(userData.email);
+    let foundUser = await users.getByCredentials(userData.email, userData.username);
     if(!foundUser){
-        //console.log("AAAAAAAAAAAAAA No encontro el email");
         return res.status(401).send('Email no encontrado')
-    }else
-    if(foundUser.password !== userData.password){
-        //console.log("AAAAAAAAAAAAAA la contraseña");
+    }else if(foundUser.password !== userData.password){
         return res.status(401).send('Contraseña incorrecta')
     }
     let payload = { userid: foundUser.userid, checkin: foundUser.checkin};
     let tk= jwt.sign(payload, 'secretKey');
-    //console.log(tk);
     res.status(200).send({token:tk});
 });
-
-/*router.get('/google', passport.authenticate('google', {scope: ['profile', 'email']}));
-router.get('/',async (req,res)=>{
-    const {token}=req.query;
-    if(token)
-        res.status(200).send(jwt.decode(token))
-    else
-        res.status(400).send({userid:-1});
-});
-
-/*router.get('/login', (_, res)=>{
-});
-
-router.get('/google', passport.authenticate('google', {scope: ['profile', 'email']}));
-
-router.get(
-    '/google/callback',
-    passport.authenticate('google', {failureRedirect: '/login'}),
-    function(req, res){
-        console.log(req.user);
-        res.redirect('/profile');
-    }
-);
-
-router.get('/google/logout', (req, res)=>{
-    req.logout();
-    res.redirect('/');
-});*/
 
 module.exports = router;

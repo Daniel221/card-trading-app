@@ -20,6 +20,10 @@ class usersController {
     const user = await pool.query('select * from users where email like $1', [email]);
     return user.rows[0];
   }
+  async getByCredentials(email, username){
+    const user = await pool.query('select * from users where email = $1 or username = $2', [email, username]);
+    return user.rows[0];
+  }
   async registerUser(name, lastName, username, password, email) {
     const id = await this.createId();
     console.log(id);
@@ -44,6 +48,15 @@ class usersController {
     qq = qq.substring(0, qq.length - 2);
     const q = await pool.query(`update users set ${qq} where userid=$1`, params);
     if (q.err) return { error: q.err };
+    return q;
+  }
+  async deleteUser(userid){
+    let q = await pool.query(`delete from chats where user1 = $1 or user2 = $1;`, [userid]);
+    q = await pool.query(`delete from contactlist where userfriend = $1 or userid =$1;`, [userid]);
+    q = await pool.query(`delete from trades where user1 = $1 or user2 = $1;`, [userid]);
+    q = await pool.query(`delete from usercards where userid = $1;`, [userid]);
+    q = await pool.query(`delete from users where userid = $1`, [userid]);
+    if(q.err) return { error: q.err };
     return q;
   }
 

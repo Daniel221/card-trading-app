@@ -8,6 +8,7 @@ const swaggerJSDoc = require('swagger-jsdoc');
 //var passport = require('passport');
 require('dotenv').config();
 const multer=require('multer');
+const axios = require('axios').default;
 //require('./config/passport');
 const cors = require('cors');
 const morgan = require('morgan');
@@ -116,6 +117,16 @@ app.use('/c', cardsRouter);
 app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(specs));
 app.use('/login', authRouter);
 app.use('/chat', chatRouter);
+
+app.get('/api', async (req,res)=>{
+  const { hundos } = req.query || 0;
+  axios.get(`https://pokeapi.co/api/v2/pokemon?limit=100&offset=${hundos*100}`).then(result=>{
+    return Promise.all(
+      result.data.results.map(p => new Promise( (re,rej) => axios.get(p.url).then(re).catch(rej)) )
+    );
+  }).then(results => results.map(r => ({ id: r.data.id, name: r.data.name[0].toUpperCase() + r.data.name.substring(1), img: r.data.sprites.front_default, types: r.data.types }))
+  ).then(pokimons=>res.status(200).send(pokimons)).catch(res.status(400).send);
+})
 
 app.post('/file', upload.single('file'), (req, res, next)=>{
   const file = req.file;
