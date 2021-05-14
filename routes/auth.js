@@ -18,13 +18,13 @@ const axios = require('axios').default;
  *                type: object
  */
 router.get('/', async (req, res) => {
-    const {token}=req.query;
-    if(token == null){
-        if(!req.usuario) return res.send();
-        let payload = { userid: req.usuario.userid, checkin: req.usuario.checkin};
-        let tk = jwt.sign(payload, 'secretKey');
-        res.status(200).send({token:tk});
-    }else return res.status(200).send(jwt.decode(token))
+  const { token } = req.query;
+  if (token == null) {
+    if (!req.usuario) return res.send();
+    let payload = { userid: req.usuario.userid, checkin: req.usuario.checkin };
+    let tk = jwt.sign(payload, 'secretKey');
+    res.status(200).send({ token: tk });
+  } else return res.status(200).send(jwt.decode(token));
 });
 
 /**
@@ -55,18 +55,18 @@ router.get('/', async (req, res) => {
  *                items:
  *                  error: string
  */
-router.post('/', async (req, res)=>{
-    let userData = req.body;
-    //let foundUser = await users.getUserByEmail(userData.email);
-    let foundUser = await users.getByCredentials(userData.email);
-    if(!foundUser){
-        return res.status(401).send('Email no encontrado')
-    }else if(foundUser.password !== userData.password){
-        return res.status(401).send('Contraseña incorrecta')
-    }
-    let payload = { userid: foundUser.userid, checkin: foundUser.checkin};
-    let tk= jwt.sign(payload, 'secretKey');
-    res.status(200).send({token:tk});
+router.post('/', async (req, res) => {
+  let userData = req.body;
+  //let foundUser = await users.getUserByEmail(userData.email);
+  let foundUser = await users.getByCredentials(userData.email);
+  if (!foundUser) {
+    return res.status(401).send('Email no encontrado');
+  } else if (foundUser.password !== userData.password) {
+    return res.status(401).send('Contraseña incorrecta');
+  }
+  let payload = { userid: foundUser.userid, checkin: foundUser.checkin };
+  let tk = jwt.sign(payload, 'secretKey');
+  res.status(200).send({ token: tk });
 });
 
 module.exports = router;

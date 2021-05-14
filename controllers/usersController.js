@@ -20,7 +20,7 @@ class usersController {
     const user = await pool.query('select * from users where email like $1', [email]);
     return user.rows[0];
   }
-  async getByCredentials(email, username){
+  async getByCredentials(email) {
     const user = await pool.query('select * from users where email = $1 or username = $1', [email]);
     return user.rows[0];
   }
@@ -46,17 +46,18 @@ class usersController {
     });
     if (a == 0) return { error: 'no data recieved' };
     qq = qq.substring(0, qq.length - 2);
-    const q = await pool.query(`update users set ${qq} where userid=$1`, params);
+    const q = await pool.query(`update users set ${qq} where userid=$1 returning birthday`, params);
+    console.log(q);
     if (q.err) return { error: q.err };
     return q;
   }
-  async deleteUser(userid){
+  async deleteUser(userid) {
     let q = await pool.query(`delete from chats where user1 = $1 or user2 = $1;`, [userid]);
     q = await pool.query(`delete from contactlist where userfriend = $1 or userid =$1;`, [userid]);
     q = await pool.query(`delete from trades where user1 = $1 or user2 = $1;`, [userid]);
     q = await pool.query(`delete from usercards where userid = $1;`, [userid]);
     q = await pool.query(`delete from users where userid = $1`, [userid]);
-    if(q.err) return { error: q.err };
+    if (q.err) return { error: q.err };
     return q;
   }
 

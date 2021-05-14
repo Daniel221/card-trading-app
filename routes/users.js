@@ -99,7 +99,7 @@ router.post('/', async (req, res) => {
     const user = await users.registerUser(name, lastName, username, password, email);
     let payload = { userid: user.id };
     let token = jwt.sign(payload, 'secretKey');
-    res.status(200).send({ user: user, token: token});
+    res.status(200).send({ user: user, token: token });
   } else res.status(400).send({ error: 'user already exists' });
 });
 
@@ -139,14 +139,22 @@ router.post('/', async (req, res) => {
  */
 router.put('/:id', async (req, res) => {
   const { id } = req.params;
-  const { name, lastName, username, password, img, profiletext, checkin } = req.body;
-  let token=undefined;
-  if(checkin){
-    token=jwt.sign({userid:id,checkin:checkin},'secretKey');
-  }else{
-    token=jwt.sign({userid:id},'secretKey');
+  const { name, lastName, username, password, img, profiletext, checkin, birthday } = req.body;
+  let token = undefined;
+  if (checkin) {
+    token = jwt.sign({ userid: id, checkin: checkin }, 'secretKey');
+  } else {
+    token = jwt.sign({ userid: id }, 'secretKey');
   }
-  const u = await users.editUser(req.params.id, { name, lastName, username, password, img, profiletext, checkin });
+  const u = await users.editUser(req.params.id, {
+    name,
+    lastName,
+    username,
+    password,
+    img,
+    profiletext,
+    checkin,
+  });
   if (u.error) res.status(400).send({ error: u.error });
   else res.status(200).send({ token: token });
 });
@@ -189,13 +197,13 @@ router.put('/:id', async (req, res) => {
  *                items:
  *                  error: string
  */
- router.get('/contacts/:id', async (req, res) => {
+router.get('/contacts/:id', async (req, res) => {
   const { id } = req.params;
-  if(!id) return res.status(400).send({ error: "no id" });
+  if (!id) return res.status(400).send({ error: 'no id' });
   const { otherId } = req.query;
-  if(otherId){
-    const dato=await users.areFrens(id, otherId);
-    return res.status(200).send(dato)
+  if (otherId) {
+    const dato = await users.areFrens(id, otherId);
+    return res.status(200).send(dato);
   }
   const data = await users.getContactsFrom(id);
   if (data.error) res.status(400).send({ error: data.error });
@@ -231,13 +239,13 @@ router.put('/:id', async (req, res) => {
  *                items:
  *                  error: string
  */
- router.post('/contacts/:oid', async (req, res) => {
+router.post('/contacts/:oid', async (req, res) => {
   const { oid } = req.params;
   const { id } = req.body;
-  if(!id||!oid) return res.status(400).send({ error: "no id" });
+  if (!id || !oid) return res.status(400).send({ error: 'no id' });
   const data = await users.addContact(oid, id);
   if (data.error) res.status(400).send({ error: data.error });
-  else res.status(200).send({msg:'success'});
+  else res.status(200).send({ msg: 'success' });
 });
 
 /**
@@ -269,13 +277,13 @@ router.put('/:id', async (req, res) => {
  *                items:
  *                  error: string
  */
- router.delete('/contacts', async (req, res) => {
+router.delete('/contacts', async (req, res) => {
   const { oid } = req.query;
   const { id } = req.query;
-  if(!id||!oid) return res.status(400).send({ error: "no id" });
+  if (!id || !oid) return res.status(400).send({ error: 'no id' });
   const data = await users.removeContact(oid, id);
   if (data.error) res.status(400).send({ error: data.error });
-  else res.status(200).send({msg:'success'});
+  else res.status(200).send({ msg: 'success' });
 });
 
 /**
@@ -311,7 +319,7 @@ router.delete('/:id', async (req, res) => {
   const { id } = req.params;
   const u = await users.deleteUser(id);
   if (u.error) res.status(400).send({ error: u.error });
-  else res.status(200).send({ msg: "deleted user" });
+  else res.status(200).send({ msg: 'deleted user' });
 });
 
 /**
@@ -353,9 +361,9 @@ router.delete('/:id', async (req, res) => {
  *                items:
  *                  error: string
  */
- router.get('/trades/:id', async (req, res) => {
+router.get('/trades/:id', async (req, res) => {
   const { id } = req.params;
-  if(!id) return res.status(400).send({ error: "no id" });
+  if (!id) return res.status(400).send({ error: 'no id' });
   const data = await users.getTradesForUser(id);
   if (data.error) res.status(400).send({ error: data.error });
   else res.status(200).send(data);
@@ -382,12 +390,12 @@ router.delete('/:id', async (req, res) => {
  *                items:
  *                  error: string
  */
-router.post('/trades',async (req,res)=>{
-  const { u1,u2,c1,c2,date,mode }=req.body;
+router.post('/trades', async (req, res) => {
+  const { u1, u2, c1, c2, date, mode } = req.body;
   let data;
-  if(mode==0) data=await users.addTrade(u1,u2,c1,c2,date);
-  else if(mode==1) data=await users.acceptTrade(u1,u2,c1,c2,date);
-  else data=await users.declineTrade(u1,u2,c1,c2,date);
+  if (mode == 0) data = await users.addTrade(u1, u2, c1, c2, date);
+  else if (mode == 1) data = await users.acceptTrade(u1, u2, c1, c2, date);
+  else data = await users.declineTrade(u1, u2, c1, c2, date);
   if (data.error) res.status(400).send({ error: data.error });
   else res.status(200).send(data);
 });
