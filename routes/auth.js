@@ -9,6 +9,8 @@ const axios = require('axios').default;
  * /login:
  *  get:
  *    summary: logs in a google socialUser
+ *    tags:
+ *      - user
  *    responses:
  *        200:
  *          description: resulting token
@@ -31,6 +33,8 @@ router.get('/', async (req, res) => {
  * @swagger
  * /login:
  *  post:
+ *    tags:
+ *      - user
  *    summary: logs in a non-google user
  *    parameters:
  *      - in: body

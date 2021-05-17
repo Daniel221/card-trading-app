@@ -6,8 +6,11 @@ const jwt = require('jsonwebtoken');
 /**
  * @swagger
  * /u:
+ *
  *  get:
  *    summary: get all users from the database
+ *    tags:
+ *      - user
  *    responses:
  *        200:
  *          description: an array of users as JSON objects
@@ -40,8 +43,11 @@ router.get('/', async (req, res) => {
 /**
  * @swagger
  * /u:
+ *
  *  get:
  *    summary: gets a specific user from the database
+ *    tags:
+ *      - user
  *    parameters:
  *      - in: path
  *        required: true
@@ -76,6 +82,8 @@ router.get('/:id', async (req, res) => {
  * /u:
  *  post:
  *    summary: Post/Register a new user on the DB
+ *    tags:
+ *      - user
  *    responses:
  *      200:
  *        description: user successfully added to DB
@@ -108,6 +116,8 @@ router.post('/', async (req, res) => {
  *  /u/{id}:
  *    put:
  *      summary: update an existing user's data
+ *    tags:
+ *      - user
  *      parameters:
  *        - in: path
  *          required: true
@@ -164,6 +174,8 @@ router.put('/:id', async (req, res) => {
  * /u/contacts:
  *  get:
  *    summary: get all contacts from an user
+ *     tags:
+ *      - user
  *    parameters:
  *      - in: path
  *        required: true
@@ -215,6 +227,8 @@ router.get('/contacts/:id', async (req, res) => {
  * /u/contacts:
  *  post:
  *    summary: add a contact to an user
+ *    tags:
+ *      - user
  *    parameters:
  *      - in: path
  *        required: true
@@ -251,8 +265,11 @@ router.post('/contacts/:oid', async (req, res) => {
 /**
  * @swagger
  * /u/contacts:
+ *
  *  delete:
  *    summary: remove a contact to an user
+ *    tags:
+ *      - user
  *    parameters:
  *      - in: path
  *        required: true
@@ -292,6 +309,8 @@ router.delete('/contacts', async (req, res) => {
  *  /u/{id}:
  *    delete:
  *      summary: deletes an user
+ *      tags:
+ *        - user
  *      parameters:
  *        - in: path
  *          required: true
@@ -327,6 +346,8 @@ router.delete('/:id', async (req, res) => {
  * @swagger
  * /u/trades:
  *  get:
+ *    tags:
+ *      - user
  *    summary: get all trades of an user
  *    parameters:
  *      - in: path
@@ -374,6 +395,8 @@ router.get('/trades/:id', async (req, res) => {
  * @swagger
  * /u/trades:
  *  post:
+ *    tags:
+ *      - user
  *    summary: accepts or declines a trade
  *    responses:
  *        200:

@@ -1,13 +1,15 @@
-const router=require('express').Router();
+const router = require('express').Router();
 const { route } = require('.');
-const cardsCont=require('../controllers/cardsController')
-const cards=new cardsCont();
+const cardsCont = require('../controllers/cardsController');
+const cards = new cardsCont();
 
 /**
  * @swagger
  * /c:
  *  get:
  *    summary: get all cards from the database or a specific user
+ *    tags:
+ *      - cards
  *    responses:
  *      200:
  *        description: an array of cards as JSON objects
@@ -32,17 +34,17 @@ const cards=new cardsCont();
  *              items:
  *                error: string
  */
-router.get('/',async (req,res)=>{
-    const {user}=req.query;
-    if(user){
-        const cartas=await cards.getAllFromUser({userid:user});
-        if(cartas.error)res.status(400).send({error:cartas.error});
-        else res.status(200).send(cartas);
-        return;
-    }
-    const data=await cards.getList();
-    if(data.error)res.status(400).send({error:data.error});
-    else res.status(200).send(data);
+router.get('/', async (req, res) => {
+  const { user } = req.query;
+  if (user) {
+    const cartas = await cards.getAllFromUser({ userid: user });
+    if (cartas.error) res.status(400).send({ error: cartas.error });
+    else res.status(200).send(cartas);
+    return;
+  }
+  const data = await cards.getList();
+  if (data.error) res.status(400).send({ error: data.error });
+  else res.status(200).send(data);
 });
 
 /**
@@ -50,6 +52,8 @@ router.get('/',async (req,res)=>{
  * /c/:id:
  *  get:
  *    summary: gets a card
+ *    tags:
+ *      - cards
  *    parameters:
  *      - in: params
  *        required: true
@@ -65,10 +69,10 @@ router.get('/',async (req,res)=>{
  *              schema:
  *                type: object
  */
-router.get('/:id',async (req,res)=>{
-    const {id}=req.params;
-    const card=await cards.getCard(id);
-    res.status(200).send(card);
+router.get('/:id', async (req, res) => {
+  const { id } = req.params;
+  const card = await cards.getCard(id);
+  res.status(200).send(card);
 });
 
 /**
@@ -76,6 +80,8 @@ router.get('/:id',async (req,res)=>{
  * /c:
  *  post:
  *    summary: create a new card
+ *    tags:
+ *      - cards
  *    parameters:
  *      - in: body
  *        required: true
@@ -99,12 +105,13 @@ router.get('/:id',async (req,res)=>{
  *                items:
  *                  error: string
  */
-router.post('/',async (req,res)=>{
-    const keys=["cardid", "title", "description", "img", "type"];
-    if(!(keys.every(k=>req.body[k]!=undefined)))return res.status(400).send({error: 'Not enough data'});
-    const data=cards.createCard(req.body);
-    if(data.error) res.status(400).send({error: data.error});
-    else res.status(200).send(data);
+router.post('/', async (req, res) => {
+  const keys = ['cardid', 'title', 'description', 'img', 'type'];
+  if (!keys.every((k) => req.body[k] != undefined))
+    return res.status(400).send({ error: 'Not enough data' });
+  const data = cards.createCard(req.body);
+  if (data.error) res.status(400).send({ error: data.error });
+  else res.status(200).send(data);
 });
 
 /**
@@ -112,6 +119,8 @@ router.post('/',async (req,res)=>{
  * /c:
  *  put:
  *    summary: update a card
+ *    tags:
+ *      - cards
  *    parameters:
  *      - in: body
  *        required: true
@@ -135,12 +144,13 @@ router.post('/',async (req,res)=>{
  *                items:
  *                  error: string
  */
-router.put('/',async (req,res)=>{
-    const keys=["cardid", "title", "description", "img", "type"];
-    if(!(keys.every(k=>req.body[k]!=undefined)))return res.status(400).send({error: 'Not enough data'});
-    const data=cards.updateCard(req.body);
-    if(data.error) res.status(400).send({error: data.error});
-    else res.status(200).send(data);
+router.put('/', async (req, res) => {
+  const keys = ['cardid', 'title', 'description', 'img', 'type'];
+  if (!keys.every((k) => req.body[k] != undefined))
+    return res.status(400).send({ error: 'Not enough data' });
+  const data = cards.updateCard(req.body);
+  if (data.error) res.status(400).send({ error: data.error });
+  else res.status(200).send(data);
 });
 
 /**
@@ -148,6 +158,8 @@ router.put('/',async (req,res)=>{
  * /c:
  *  delete:
  *    summary: deletes a card
+ *    tags:
+ *      - cards
  *    parameters:
  *      - in: params
  *        required: true
@@ -171,12 +183,12 @@ router.put('/',async (req,res)=>{
  *                items:
  *                  error: string
  */
-router.delete('/:cardid',async (req,res)=>{
-    const { cardid } = req.params;
-    if(cardid == null) return res.status(400).send({error: "No card id"});
-    const data = await cards.deleteCard(cardid);
-    if(data.error) res.status(400).send({error: data.error});
-    else res.status(200).send({msg: "success"});
+router.delete('/:cardid', async (req, res) => {
+  const { cardid } = req.params;
+  if (cardid == null) return res.status(400).send({ error: 'No card id' });
+  const data = await cards.deleteCard(cardid);
+  if (data.error) res.status(400).send({ error: data.error });
+  else res.status(200).send({ msg: 'success' });
 });
 
 /**
@@ -184,6 +196,8 @@ router.delete('/:cardid',async (req,res)=>{
  * /c/userid:
  *  post:
  *    summary: grant a random card to an user
+ *    tags:
+ *      - cards
  *    parameters:
  *      - in: path
  *        required: true
@@ -208,12 +222,12 @@ router.delete('/:cardid',async (req,res)=>{
  *                items:
  *                  error: string
  */
-router.post('/:userid',async (req,res)=>{
-    const { userid } = req.params;
-    const { cardid } = req.body;
-    if(userid==null||cardid==null)return res.status(400).send({error:"Not enough data"});
-    const data=await cards.grantToUser(cardid,userid);
-    res.status(200).send({data:data});
+router.post('/:userid', async (req, res) => {
+  const { userid } = req.params;
+  const { cardid } = req.body;
+  if (userid == null || cardid == null) return res.status(400).send({ error: 'Not enough data' });
+  const data = await cards.grantToUser(cardid, userid);
+  res.status(200).send({ data: data });
 });
 
-module.exports=router;
+module.exports = router;
